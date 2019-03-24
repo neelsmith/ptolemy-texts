@@ -12,10 +12,13 @@ import java.io.PrintWriter
 // 1. have file names reflecting canonical passage ID
 // 2. include navigational links to previous/next nodes in the text
 //
+// Usage:
+//     formatCorpus()
+//
 ///////////////////////////////////////////////////////////////////////////
 
 val harmonicsFile = "ocr/harmonics.cex"
-val c = CorpusSource.fromFile(harmonicsFile)
+val corpus = CorpusSource.fromFile(harmonicsFile)
 
 
 def prevLink(u: CtsUrn, c: Corpus) : String = {
@@ -54,8 +57,11 @@ def formatNode(n: CitableNode, c: Corpus): String = {
   yaml + "\n\n" + text + "\n\n" + links + "\n\n"
 }
 
-
-def formatCorpus(c: Corpus, dir: String = "harmonics") = {
+//
+// Format corpus of Ptolemy's *Harmonics* as markdown, and write
+// a series of linked markdown files.
+//
+def formatCorpus(c: Corpus = corpus, dir: String = "harmonics") = {
   val workDir = new File(dir)
   if (! workDir.exists) {workDir.mkdir()}
   for (n <- c.nodes) {
