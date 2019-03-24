@@ -74,7 +74,7 @@ def tocLink(n: CitableNode) : String = {
   val parts = n.urn.passageComponent.split("\\.")
   val linkText = "../" + parts(0) + "." + parts(2) + "/"
 
-  s"[${n.urn.passageComponent}.  ${n.text}](${linkText})"
+  s"${parts(0)}.${parts(2)}  [${n.text}](${linkText})"
 
 }
 
