@@ -3,6 +3,22 @@ import edu.holycross.shot.ohco2._
 import java.io.File
 import java.io.PrintWriter
 
+///////////////////////////////////////////////////////////////////////////
+//
+// For the digital version of Düring's edition of the *Harmonics*,
+// generate a series of markdown files with suitable yaml header to
+// drop into a jekyll web service.  Content is organized with one file per
+// level-2 citation. Files should:
+//
+// 1. have file names reflecting canonical passage ID
+// 2. include navigational links to previous/next nodes in the text
+//
+// Usage:
+//     formatCorpus2()
+//
+///////////////////////////////////////////////////////////////////////////
+
+
 val harmonicsFile = "ocr/harmonics.cex"
 val corpus = CorpusSource.fromFile(harmonicsFile)
 val twotierUrns = corpus.nodes.map(_.urn.collapsePassageBy(1)).distinct
@@ -44,6 +60,7 @@ def nextLink(u: CtsUrn, c: Corpus) : String = {
 
 def formatNode2(nodes: Vector[CitableNode], c: Corpus): String = {
   val urn = nodes(0).urn.collapsePassageTo(2)
+  println("LOOK AT " + urn)
   val yaml = s"---\ntitle: Ptolemy Harmonics ${urn.passageComponent}\nlayout: page\n---\n\n"
 
   val prevString = c.prevUrn(urn) match {
@@ -55,15 +72,18 @@ def formatNode2(nodes: Vector[CitableNode], c: Corpus): String = {
     case prv: Option[CtsUrn] => nextLink(urn,c)
   }
   val links = s"${prevString} | ${nextString} "
-  /*
-  val text = if (n.urn.toString.endsWith(".title")) {
-    "*" + n.text + "*"
-  } else {
-    n.text
+
+  val mdNodes = for (nd <- nodes) yield  {
+    println("Format " + nd.urn.passageComponent)
+    nd match {
+      case title if title.urn.toString.endsWith("title") =>  "*" + title.text + "*" + "\n"
+      case txt if txt.urn.toString.endsWith("text") => txt.text
+      case tocEntry if tocEntry.urn.toString.contains(".toc.") => "-  " + tocEntry.text
+    }
   }
+  val text = mdNodes.mkString("\n")
+
   yaml + "\n\n" + text + "\n\n" + links + "\n\n"
-  */
-  yaml + "\n\n" + links + "\n\n"
 }
 
 
