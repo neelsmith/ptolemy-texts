@@ -3,6 +3,17 @@ import edu.holycross.shot.ohco2._
 import java.io.File
 import java.io.PrintWriter
 
+///////////////////////////////////////////////////////////////////////////
+//
+// For the digital version of Düring's edition of the *Harmonics*,
+// generate a series of markdown files with suitable yaml header to
+// drop into a jekyll web service, one file per citable node.  Files should:
+//
+// 1. have file names reflecting canonical passage ID
+// 2. include navigational links to previous/next nodes in the text
+//
+///////////////////////////////////////////////////////////////////////////
+
 val harmonicsFile = "ocr/harmonics.cex"
 val c = CorpusSource.fromFile(harmonicsFile)
 
