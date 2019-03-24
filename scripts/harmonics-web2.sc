@@ -1,7 +1,9 @@
 import edu.holycross.shot.cite._
 import edu.holycross.shot.ohco2._
+import scala.io.Source
 import java.io.File
 import java.io.PrintWriter
+import edu.holycross.shot.mid.validator.ImageManager
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -20,6 +22,19 @@ import java.io.PrintWriter
 
 
 val harmonicsFile = "ocr/harmonics.cex"
+val graphicsData = "indexes/leiden-harmonics-diagrams.cex"
+
+val textGraphicsPairs : Vector[(CtsUrn, Cite2Urn)] = {
+  val lines = Source.fromFile(graphicsData).getLines.toVector
+  val pairings = for (ln <- lines.tail) yield {
+    val cols = ln.split("#")
+    (CtsUrn(cols(3)), Cite2Urn(cols(2)))
+  }
+  pairings
+}
+
+val imgMgr = ImageManager()
+
 val corpus = CorpusSource.fromFile(harmonicsFile)
 val twotierUrns = corpus.nodes.map(_.urn.collapsePassageBy(1)).distinct
 
@@ -57,7 +72,6 @@ def nextLink(u: CtsUrn, c: Corpus) : String = {
 }
 
 def tocLink(n: CitableNode) : String = {
-  //println("LINK " + n)
   val parts = n.urn.passageComponent.split("\\.")
   val linkText = "../" + parts(0) + "." + parts(2) + "/"
 
@@ -89,7 +103,19 @@ def formatNode2(nodes: Vector[CitableNode], c: Corpus): String = {
   }
   val text = mdNodes.mkString("\n")
 
-  yaml + "\n\n" + text + "\n\n" + links + "\n\n"
+
+  val imgReff =  textGraphicsPairs.filter(_._1 == urn).map(_._2)
+  val imgs = if (imgReff.isEmpty) {
+    ""
+  } else {
+    val links = for (ref <- imgReff) yield {
+       imgMgr.markdown(ref, 800)
+     }
+     "## Graphics\n\n" + links.mkString("\n\n")
+  }
+
+
+  yaml + "\n\n" + text + "\n\n" + imgs +  "\n\n" + links + "\n\n"
 }
 
 

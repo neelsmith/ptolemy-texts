@@ -1,12 +1,10 @@
-Diagram#Note#Image
-1#End of 1.5#urn:cite2:leiden:voss70imgs.v1:vg70_7v_8r@0.1216,0.5396,0.3695,0.2945
-2#In 1.6#urn:cite2:leiden:voss70imgs.v1:vg70_8v_9r@0.1189,0.2978,0.1127,0.2786
-3#In 1.6#urn:cite2:leiden:voss70imgs.v1:vg70_8v_9r@0.7175,0.3770,0.2004,0.08742
-4#Harmonic kanon in 1.8#urn:cite2:leiden:voss70imgs.v1:vg70_10v_11r@0.1896,0.6152,0.2276,0.08905
-5#Harmonic kanon in 1.8#urn:cite2:leiden:voss70imgs.v1:vg70_11v_12r@0.5300,0.5266,0.4513,0.1744
-6#In 1.9#urn:cite2:leiden:voss70imgs.v1:vg70_13v_14rx@0.1094,0.6054,0.2521,0.1867
-7#In 1.10#urn:cite2:leiden:voss70imgs.v1:vg70_14v_15r@0.04871,0.1732,0.2892,0.1438
-8#In 1.10#urn:cite2:leiden:voss70imgs.v1:vg70_14v_15r@0.2485,0.4481,0.2227,0.1397
-9#In 1.10#urn:cite2:leiden:voss70imgs.v1:vg70_15v_16r@0.1578,0.3007,0.2301,0.1266
-10#In 1.11#urn:cite2:leiden:voss70imgs.v1:vg70_16v_17r@0.1857,0.2259,0.2037,0.2030
-11#In 1.12#urn:cite2:leiden:voss70imgs.v1:vg70_16v_17r@0.1857,0.2259,0.2037,0.2030
+Diagram#Note#Image#Text context
+1#End of 1.5#urn:cite2:leiden:voss70imgs.v1:vg70_7v_8r@0.1216,0.5396,0.3695,0.2945#urn:cts:greekLit:tlg0363.tlg010.during:1.5
+2#In 1.6#urn:cite2:leiden:voss70imgs.v1:vg70_8v_9r@0.1189,0.2978,0.1127,0.2786#urn:cts:greekLit:tlg0363.tlg010.during:1.6
+3#In 1.6#urn:cite2:leiden:voss70imgs.v1:vg70_8v_9r@0.7175,0.3770,0.2004,0.08742#urn:cts:greekLit:tlg0363.tlg010.during:1.6
+5#Harmonic kanon in 1.8#urn:cite2:leiden:voss70imgs.v1:vg70_11v_12r@0.5300,0.5266,0.4513,0.1744#urn:cts:greekLit:tlg0363.tlg010.during:1.8
+6#In 1.9#urn:cite2:leiden:voss70imgs.v1:vg70_13v_14rx@0.1094,0.6054,0.2521,0.1867#urn:cts:greekLit:tlg0363.tlg010.during:1.9
+7#In 1.10#urn:cite2:leiden:voss70imgs.v1:vg70_14v_15r@0.04871,0.1732,0.2892,0.1438#urn:cts:greekLit:tlg0363.tlg010.during:1.10
+8#In 1.10#urn:cite2:leiden:voss70imgs.v1:vg70_14v_15r@0.2485,0.4481,0.2227,0.1397#urn:cts:greekLit:tlg0363.tlg010.during:1.10
+9#In 1.10#urn:cite2:leiden:voss70imgs.v1:vg70_15v_16r@0.1578,0.3007,0.2301,0.1266#urn:cts:greekLit:tlg0363.tlg010.during:1.10
+10#In 1.11#urn:cite2:leiden:voss70imgs.v1:vg70_16v_17r@0.1857,0.2259,0.2037,0.2030#urn:cts:greekLit:tlg0363.tlg010.during:1.10
