@@ -56,11 +56,18 @@ def nextLink(u: CtsUrn, c: Corpus) : String = {
   }
 }
 
+def tocLink(n: CitableNode) : String = {
+  //println("LINK " + n)
+  val parts = n.urn.passageComponent.split("\\.")
+  val linkText = "../" + parts(0) + "." + parts(2) + "/"
+
+  s"[${n.text}](${linkText})"
+
+}
 
 
 def formatNode2(nodes: Vector[CitableNode], c: Corpus): String = {
   val urn = nodes(0).urn.collapsePassageTo(2)
-  println("LOOK AT " + urn)
   val yaml = s"---\ntitle: Ptolemy Harmonics ${urn.passageComponent}\nlayout: page\n---\n\n"
 
   val prevString = c.prevUrn(urn) match {
@@ -74,11 +81,10 @@ def formatNode2(nodes: Vector[CitableNode], c: Corpus): String = {
   val links = s"${prevString} | ${nextString} "
 
   val mdNodes = for (nd <- nodes) yield  {
-    println("Format " + nd.urn.passageComponent)
     nd match {
       case title if title.urn.toString.endsWith("title") =>  "*" + title.text + "*" + "\n"
       case txt if txt.urn.toString.endsWith("text") => txt.text
-      case tocEntry if tocEntry.urn.toString.contains(".toc.") => "-  " + tocEntry.text
+      case tocEntry if tocEntry.urn.toString.contains(".toc.") => "-  " + tocLink(tocEntry)
     }
   }
   val text = mdNodes.mkString("\n")
@@ -95,7 +101,6 @@ def formatCorpus2(c: Corpus = corpus, dir: String = "harmonics", urns: Vector[Ct
   for (u <- urns) {
     println(u)
     val subCorp = c ~~ u
-    println(">NODES" + subCorp.nodes.map(_.urn.passageComponent))
 
     val pgDir = new File(dir + "/" + u.passageComponent)
     if (! pgDir.exists) {pgDir.mkdir()}
