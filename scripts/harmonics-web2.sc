@@ -47,9 +47,8 @@ def prevLink(u: CtsUrn, c: Corpus) : String = {
       } else {
         prv.get.collapsePassageTo(2)
       }
-      //println("COLLAPSED: " + collapsed)
 
-      s"[${collapsed.passageComponent}](../${collapsed.passageComponent}/)"
+      s"previous: [${collapsed.passageComponent}](../${collapsed.passageComponent}/)"
     }
   }
 }
@@ -60,13 +59,13 @@ def nextLink(u: CtsUrn, c: Corpus) : String = {
     case None => ""
     case nxt: Option[CtsUrn] => {
       val collapsed = if (nxt.get.isRange) {
-        CtsUrn(nxt.get.dropPassage.toString + nxt.get.rangeBegin).collapsePassageTo(2)
+       CtsUrn(nxt.get.dropPassage.toString + nxt.get.rangeBegin).collapsePassageTo(2)
       } else {
         nxt.get.collapsePassageTo(2)
       }
-      //println("COLLAPSED: " + collapsed)
 
-      s"[${collapsed.passageComponent}](../${collapsed.passageComponent}/)"
+
+      s"next: [${collapsed.passageComponent}](../${collapsed.passageComponent}/)"
     }
   }
 }
@@ -75,7 +74,7 @@ def tocLink(n: CitableNode) : String = {
   val parts = n.urn.passageComponent.split("\\.")
   val linkText = "../" + parts(0) + "." + parts(2) + "/"
 
-  s"[${n.text}](${linkText})"
+  s"[${n.urn.passageComponent}.  ${n.text}](${linkText})"
 
 }
 
@@ -92,7 +91,7 @@ def formatNode2(nodes: Vector[CitableNode], c: Corpus): String = {
     case None => ""
     case prv: Option[CtsUrn] => nextLink(urn,c)
   }
-  val links = s"${prevString} | ${nextString} "
+  val links = s"[Contents](../) | ${prevString} | ${nextString} "
 
   val mdNodes = for (nd <- nodes) yield  {
     nd match {
