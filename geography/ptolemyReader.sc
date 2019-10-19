@@ -1,6 +1,6 @@
 import scala.xml._
 
-val f = "tlg0363.tlg009.epist03-p5-u8.xml"
+val f = "tei/tlg0363.tlg009.epist03-p5-u8.xml"
 
 val root = XML.loadFile(f)
 val books = (root \ "text" \ "body" \ "div").toVector
@@ -36,7 +36,7 @@ def itemToGeoPoint(itemNode: scala.xml.Node): Option[GreekGeoPoint] = {
   val pointNameList =  (itemNode \ "name").toVector
   val digits = (itemNode \ "measure" \ "num").toVector
   if (pointNameList.size != 1) {
-    println("NO NAME ELEMENT in " + itemNode)
+    println("WRONG NUMBER OF NAMES ELEMENT in " + itemNode)
     None
 
   } else if (digits.size != 4) {
@@ -73,7 +73,7 @@ val gkPts = for (pt <- pts) yield {
   val pointNameList =  (pt \ "name").toVector
   val digits = (pt \ "measure" \ "num").toVector
   if (pointNameList.size != 1) {
-    "NO NAME ELEMENT in " + pt
+    "WRONG NUMBER OF NAMES ELEMENT in " + pt
 
   } else {
     //pointNameList(0).attributes("name").text
