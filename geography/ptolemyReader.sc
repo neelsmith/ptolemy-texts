@@ -4,6 +4,82 @@ val f = "tei/tlg0363.tlg009.epist03-p5-u8.xml"
 
 val root = XML.loadFile(f)
 val books = (root \ "text" \ "body" \ "div").toVector
+
+def bookXml(bk: String) : scala.xml.Node = {
+  val bks = books.filter(_.attributes("n").text == bk)
+  if (bks.size !=1) {
+    throw new Exception("No, no,no.")
+  } else {
+    bks(0)
+  }
+}
+
+def twoTierXml(bk: String, chap: String) : scala.xml.Node= {
+  val book = bookXml(bk)
+  val chapts = (book \ "div").toVector.filter(_.attributes("n").text == chap)
+  if (chapts.size != 1) {
+    throw new Exception("Again, no, no,no.")
+  } else {
+    chapts(0)
+  }
+}
+
+
+def threeTierXml(bk: String, chap: String, sect: String): scala.xml.Node = {
+  val chapter = twoTierXml(bk, chap)
+  val sects = (chapter \ "div").toVector.filter(_.attributes("n").text == sect)
+  if (sects.size != 1) {
+    throw new Exception("Again and again, no, no,no.")
+  } else {
+    sects(0)
+  }
+}
+
+def listItems(ref: String) = {
+  val parts = ref.split("\\.")
+  val section = threeTierXml(parts(0),parts(1),parts(2))
+  val items = section \ "list" \ "item"
+  items.toVector
+}
+
+
+def walkGeo(geo: scala.xml.Node, context: String, ethnic: String) {
+  val geoId = geo.attributes("n").text
+  val ref = context + "." + geoId
+  val items = listItems(ref)
+  println( ref + " (" + ethnic + ") "+ items.size + " items." )
+}
+def walkEthnics(ethnic: scala.xml.Node, bookNum: String) {
+  val ethnicId = ethnic.attributes("n").text
+  val ethnicAttr = ethnic.attributes("ana")
+  val ethnicType = if (ethnicAttr == null){
+    "NONE"
+  } else {
+    ethnicAttr.text
+  }
+  val ref = bookNum + "." + ethnicId
+
+  val geos = (ethnic \ "div").toVector
+  for (geo <- geos) {
+    walkGeo(geo, ref, ethnicType)
+  }
+}
+def walkBook(bookXml : scala.xml.Node) = {
+  val bkNum = bookXml.attributes("n").text
+  val ethnics = (bookXml \ "div").toVector
+  for (ethnic <- ethnics) {
+    walkEthnics(ethnic, bkNum)
+  }
+
+}
+def walkTree = {
+  // Book 1 has no data, so start with second book, ie., books(1)
+  for (bk <- 1 to 7) {
+    val bookXml = books(bk)
+    walkBook(bookXml)
+  }
+}
+/*
 val ethnics = (root \ "text" \ "body" \ "div" \ "div").toVector
 val geoareas = (root \ "text" \ "body" \ "div" \ "div" \ "div").toVector
 
@@ -76,6 +152,11 @@ val mTypes = for ((m,i) <- measures.zipWithIndex) yield {
 val typesGrouped = mTypes.filterNot(_.contains("NO TYPE")).groupBy(t => t)
 val typesHist = typesGrouped.map{ case (k,v) => (k,v.size) }
 val typesOrdered = typesHist.toVector.sortBy(_._2).reverse
+
+*/
+
+
+
 /*
 val gkPts = for (pt <- pts) yield {
   //println("\n\n" + pt.text)
