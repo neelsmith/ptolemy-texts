@@ -29,7 +29,7 @@ def threeTierXml(bk: String, chap: String, sect: String): scala.xml.Node = {
   val chapter = twoTierXml(bk, chap)
   val sects = (chapter \ "div").toVector.filter(_.attributes("n").text == sect)
   if (sects.size != 1) {
-    throw new Exception("Again and again, no, no,no.")
+    throw new Exception("Again and again, no, no, no: " + sects.size + " sections!")
   } else {
     sects(0)
   }
@@ -46,14 +46,23 @@ def listItems(ref: String) = {
 def walkGeo(geo: scala.xml.Node, context: String, ethnic: String) {
   val geoId = geo.attributes("n").text
   val ref = context + "." + geoId
+  val typeAttr = geo.attributes("type")
+  val geoType = if (typeAttr == null) {
+    "NO GEO TYPE"
+  } else if (typeAttr.text == "section") {
+    "text paragraph"
+  } else {
+    typeAttr.text
+  }
+
   val items = listItems(ref)
-  println( ref + " (" + ethnic + ") "+ items.size + " items." )
+  println( ref + " (" + List(ethnic, geoType).mkString(", ") + ") "+ items.size + " items." )
 }
-def walkEthnics(ethnic: scala.xml.Node, bookNum: String) {
+def walkEthnics(ethnic: scala.xml.Node, bookNum: String, continent: String) {
   val ethnicId = ethnic.attributes("n").text
   val ethnicAttr = ethnic.attributes("ana")
   val ethnicType = if (ethnicAttr == null){
-    "NONE"
+    "NO ETHNIC"
   } else {
     ethnicAttr.text
   }
@@ -61,20 +70,23 @@ def walkEthnics(ethnic: scala.xml.Node, bookNum: String) {
 
   val geos = (ethnic \ "div").toVector
   for (geo <- geos) {
-    walkGeo(geo, ref, ethnicType)
+    walkGeo(geo, ref, Vector(continent, ethnicType).mkString(", "))
   }
 }
 def walkBook(bookXml : scala.xml.Node) = {
   val bkNum = bookXml.attributes("n").text
+  val continentAttr = bookXml.attributes("ana")
+  val continent = if (continentAttr == null) {"NO CONTINENT"} else { continentAttr.text }
   val ethnics = (bookXml \ "div").toVector
   for (ethnic <- ethnics) {
-    walkEthnics(ethnic, bkNum)
+    walkEthnics(ethnic, bkNum, continent)
   }
 
 }
-def walkTree = {
+def walkTree(startBook: Int = 2, endBook: Int = 8) = {
   // Book 1 has no data, so start with second book, ie., books(1)
-  for (bk <- 1 to 7) {
+  // Book 8 has data, but only for submaps.
+  for (bk <- (startBook - 1) to (endBook - 1)) {
     val bookXml = books(bk)
     walkBook(bookXml)
   }
