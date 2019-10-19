@@ -59,15 +59,24 @@ val measureNodes = for (pt <- pts) yield {
 }
 val measures = measureNodes.toVector.flatten
 
-/*
+
 val mTypes = for ((m,i) <- measures.zipWithIndex) yield {
   println(i + ". " + m.text)
-  val t = m.attributes("type").text
-  println(t)
-  t
-}
-*/
 
+  val t = m.attributes("type")
+
+  println(t)
+  if (t == null) {
+    "NO TYPE ATTRIBUTE on " + m
+  } else {
+    t.text
+  }
+}
+
+val typesGrouped = mTypes.filterNot(_.contains("NO TYPE")).groupBy(t => t)
+val typesHist = typesGrouped.map{ case (k,v) => (k,v.size) }
+val typesOrdered = typesHist.toVector.sortBy(_._2).reverse
+/*
 val gkPts = for (pt <- pts) yield {
   //println("\n\n" + pt.text)
   val pointNameList =  (pt \ "name").toVector
@@ -85,3 +94,4 @@ val gkPts = for (pt <- pts) yield {
   //val gkPt = itemToGeoPoint(pt)
   //println(gkPt)
   //gkPt
+  */
