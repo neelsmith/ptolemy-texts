@@ -29,21 +29,40 @@ val lists = for (bk <- books) yield {
       val sectNum = sect.attribute("n").get
       val geoType = sect.attribute("type").getOrElse("")
 
-      val props = if (province.isEmpty) { "" } else {":  " + Vector(continent, province, geoType).mkString(",") }
-      val summary = Vector(bkNum, chNum, sectNum).mkString(".") +  props
+      val props = if (province.isEmpty) { "" } else {Vector(continent, province, geoType).mkString(",") }
+      val summary = Vector(bkNum, chNum, sectNum).mkString(".") + "," + props
       val lists =  sect \ "list"
       (summary, lists.toVector)
     }
   }
 }
 
-def itemProcess(n: scala.xml.Node) = {
-  val nameSeq = n \ "name"
-}
+
 
 val listData = lists.flatten.flatten.toVector.filter(_._2.nonEmpty)
 
 
+case class PtolStrings (
+  psg: String,
+  continent: String,
+  province: String,
+  siteType: String,
+  id: String,
+  text: String
+)
+
+def parseCsv(s: String): PtolStrings = {
+  val cols = s.split(",")
+  println("Parsing " + cols.toVector)
+  PtolStrings(
+    cols(0),
+    cols(1),
+    cols(2),
+    cols(3),
+    cols(4),
+    cols(5)
+  )
+}
 
 def itemProcess(n: scala.xml.Node) : String = {
   val nameSeq = n \ "name"
@@ -54,8 +73,7 @@ def itemProcess(n: scala.xml.Node) : String = {
       case "episemos" => "" //println("Episemos")
       case "place" => {
         val id = nd.attribute("key").get.text
-        val res = id + " " + nd.text.replaceAll("[\\s]+", " ")
-        println(res)
+        val res = id + "," + nd.text.replaceAll("[\\s]+", " ")
         res
       }
     }
@@ -79,12 +97,15 @@ def listProcess(l : scala.xml.Node) = {
 }
 
 
-def runit = {
+def csv = {
   val ptData = for (lData <- listData) yield {
     //println(lData._1 + " " + lData._2.size)
     for (l <- lData._2) yield {
-      listProcess(l)
+      listProcess(l).map(s => lData._1 + "," + s)
     }
   }
   ptData.flatten.flatten
 }
+
+val goodData = csv.filterNot(_.contains(",,"))
+val ptolemy = for (ln <- goodData) yield { parseCsv(ln) }
