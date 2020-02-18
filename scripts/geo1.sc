@@ -13,7 +13,7 @@ def lists(bkList : scala.xml.NodeSeq) = {
   val continentOpt =   bk.attribute("ana")
   val continent = continentOpt match {
     case None => ""
-    case _ => continentOpt.get.text
+    case _ => continentOpt.get.text.replaceAll("#", "")
   }
   val chaps = bk \ "div"
   for (ch <- chaps) yield {
@@ -22,7 +22,7 @@ def lists(bkList : scala.xml.NodeSeq) = {
     val provinceOpt =   ch.attribute("ana")
     val province = provinceOpt match {
       case None => ""
-      case _ => provinceOpt.get.text
+      case _ => provinceOpt.get.text.replaceAll("#", "")
     }
 
     val sects = ch \ "div"
@@ -30,8 +30,8 @@ def lists(bkList : scala.xml.NodeSeq) = {
       val sectNum = sect.attribute("n").get
       val geoType = sect.attribute("type").getOrElse("")
 
-      val props = if (province.isEmpty) { "" } else {Vector(continent, province, geoType).mkString(",") }
-      val summary = Vector(bkNum, chNum, sectNum).mkString(".") + "," + props
+      val props = if (province.isEmpty) { "" } else {Vector(continent, province, geoType).mkString("#") }
+      val summary = Vector(bkNum, chNum, sectNum).mkString(".") + "#" + props
       val lists =  sect \ "list"
       (summary, lists.toVector)
     }
@@ -57,7 +57,7 @@ case class PtolStrings (
 )
 
 def parseCsv(s: String): PtolStrings = {
-  val cols = s.split(",")
+  val cols = s.split("#")
   //println("Parsing " + cols.toVector)
   val lon = {
     try {
@@ -103,36 +103,26 @@ def formatLL(nums: Vector[scala.xml.Node]): String = {
   val lon = MilesianNumeric(lonDeg + lonMin)
   val lat = MilesianNumeric(latDeg + latMin)
   //s"${lon.ucode} =  ${lon.toDouble} : ${lat.ucode} = ${lat.toDouble}"
-  Vector(lon.ucode,lat.ucode,lon.toDouble,lat.toDouble).mkString(",")
+  Vector(lon.ucode,lat.ucode,lon.toDouble,lat.toDouble).mkString("#")
 }
 
 def itemProcess(n: scala.xml.Node) : String = {
   val nameSeq = n \ "name"
-/*
-  <measure  type='llpair'>
-      <num  type='cardinal'>κη</num>
-      <num  type='fraction'>𐅷 </num>
-      <num  type='cardinal'>μβ</num>
-      <num  type='fraction'>𐅷 </num>
-  </measure>
-  */
   if(nameSeq.toVector.nonEmpty) {
-
-
     val nd = nameSeq.head
     val processed = nd.attribute("type").get.text match {
       case "episemos" => "" //println("Episemos")
       case "place" => {
         val measures = (n \ "measure" \ "num").toVector
         val id = nd.attribute("key").get.text
-        val res = id + "," + nd.text.replaceAll("[\\s]+", " ")
+        val res = id + "#" + nd.text.replaceAll("[\\s]+", " ")
         val lldata = if (measures.size != 4) {
           println(s"ERROR: ${measures.size} nums in  " + res)
           ""
         } else {
           formatLL(measures)
         }
-        res + "," + lldata
+        res + "#" + lldata
       }
     }
     processed
@@ -150,7 +140,6 @@ def listProcess(l : scala.xml.Node) = {
     val myItem = itemProcess(i)
     myItem
   }
-  //println("Items: " + processed)
   processed
 }
 
@@ -159,11 +148,24 @@ def csv(data: Vector[(String, Vector[scala.xml.Node])]) = {
   val ptData = for (lData <- data) yield {
     //println(lData._1 + " " + lData._2.size)
     for (l <- lData._2) yield {
-      listProcess(l).map(s => lData._1 + "," + s)
+      listProcess(l).map(s => lData._1 + "#" + s)
     }
   }
   ptData.flatten.flatten
 }
 
-val goodData = csv(listData).filterNot(_.contains(",,"))
-val ptolemy = for (ln <- goodData) yield { parseCsv(ln) }
+// drop entries with empty columns:
+val goodData = csv(listData).filterNot(_.contains("##"))
+val ptolemyOpts = for (ln <- goodData) yield {
+  try {
+    val parsed = parseCsv(ln)
+    Some(parsed)
+  } catch {
+    case t: Throwable => {
+      println("FAILED ON " + ln)
+      None
+    }
+  }
+}
+
+val ptolemy = ptolemyOpts.flatten
