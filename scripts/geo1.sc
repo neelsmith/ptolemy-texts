@@ -49,20 +49,61 @@ case class PtolStrings (
   province: String,
   siteType: String,
   id: String,
-  text: String
+  text: String,
+  lonStr: String,
+  latStr: String,
+  lon: Double,
+  lat: Double
 )
 
 def parseCsv(s: String): PtolStrings = {
   val cols = s.split(",")
   //println("Parsing " + cols.toVector)
+  val lon = {
+    try {
+      cols(8).toDouble
+    } catch {
+      case t: Throwable => -1.0
+    }
+  }
+  val lat = {
+    try {
+      cols(9).toDouble
+    } catch {
+      case t: Throwable => -1.0
+    }
+  }
   PtolStrings(
     cols(0),
     cols(1),
     cols(2),
     cols(3),
     cols(4),
-    cols(5)
+    cols(5),
+    cols(6),
+    cols(7),
+    lon,
+    lat
   )
+}
+
+def formatLL(nums: Vector[scala.xml.Node]): String = {
+  val lonDeg = if (nums(0).text.isEmpty) {""} else {
+    nums(0).text + "' "
+  }
+  val lonMin = if (nums(1).text.isEmpty) {""} else {
+    nums(1).text + "\""
+  }
+  val latDeg = if (nums(2).text.isEmpty) {""} else {
+    nums(2).text + "' "
+  }
+  val latMin = if (nums(3).isEmpty) {""} else {
+    nums(3).text + "\""
+  }
+  val lon = MilesianNumeric(lonDeg + lonMin)
+  val lat = MilesianNumeric(latDeg + latMin)
+  //s"${lon.ucode} =  ${lon.toDouble} : ${lat.ucode} = ${lat.toDouble}"
+  Vector(lon.ucode,lat.ucode,lon.toDouble,lat.toDouble).mkString(",")
 }
 
 def itemProcess(n: scala.xml.Node) : String = {
@@ -85,10 +126,13 @@ def itemProcess(n: scala.xml.Node) : String = {
         val measures = (n \ "measure" \ "num").toVector
         val id = nd.attribute("key").get.text
         val res = id + "," + nd.text.replaceAll("[\\s]+", " ")
-        if (measures.size != 4) {
-          println(s"${measures.size} nums in  " + res)
+        val lldata = if (measures.size != 4) {
+          println(s"ERROR: ${measures.size} nums in  " + res)
+          ""
+        } else {
+          formatLL(measures)
         }
-        res
+        res + "," + lldata
       }
     }
     processed
@@ -111,8 +155,8 @@ def listProcess(l : scala.xml.Node) = {
 }
 
 
-def csv = {
-  val ptData = for (lData <- listData) yield {
+def csv(data: Vector[(String, Vector[scala.xml.Node])]) = {
+  val ptData = for (lData <- data) yield {
     //println(lData._1 + " " + lData._2.size)
     for (l <- lData._2) yield {
       listProcess(l).map(s => lData._1 + "," + s)
@@ -121,5 +165,5 @@ def csv = {
   ptData.flatten.flatten
 }
 
-val goodData = csv.filterNot(_.contains(",,"))
+val goodData = csv(listData).filterNot(_.contains(",,"))
 val ptolemy = for (ln <- goodData) yield { parseCsv(ln) }
