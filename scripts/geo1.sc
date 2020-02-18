@@ -1,4 +1,5 @@
 import scala.xml._
+import edu.holycross.shot.greek._
 
 val xml = "tei/tlg0363.tlg009.epist03-p5-u8.xml"
 
@@ -6,8 +7,8 @@ val xml = "tei/tlg0363.tlg009.epist03-p5-u8.xml"
 val root = XML.loadFile(xml)
 val books = root \ "text" \ "body" \ "div"
 
-
-val lists = for (bk <- books) yield {
+def lists(bkList : scala.xml.NodeSeq) = {
+ for (bk <- bkList) yield {
   val bkNum = bk.attribute("n").get
   val continentOpt =   bk.attribute("ana")
   val continent = continentOpt match {
@@ -35,11 +36,11 @@ val lists = for (bk <- books) yield {
       (summary, lists.toVector)
     }
   }
-}
+} }
 
 
 
-val listData = lists.flatten.flatten.toVector.filter(_._2.nonEmpty)
+val listData = lists(books).flatten.flatten.toVector.filter(_._2.nonEmpty)
 
 
 case class PtolStrings (
@@ -53,7 +54,7 @@ case class PtolStrings (
 
 def parseCsv(s: String): PtolStrings = {
   val cols = s.split(",")
-  println("Parsing " + cols.toVector)
+  //println("Parsing " + cols.toVector)
   PtolStrings(
     cols(0),
     cols(1),
@@ -66,14 +67,27 @@ def parseCsv(s: String): PtolStrings = {
 
 def itemProcess(n: scala.xml.Node) : String = {
   val nameSeq = n \ "name"
-
+/*
+  <measure  type='llpair'>
+      <num  type='cardinal'>κη</num>
+      <num  type='fraction'>𐅷 </num>
+      <num  type='cardinal'>μβ</num>
+      <num  type='fraction'>𐅷 </num>
+  </measure>
+  */
   if(nameSeq.toVector.nonEmpty) {
+
+
     val nd = nameSeq.head
     val processed = nd.attribute("type").get.text match {
       case "episemos" => "" //println("Episemos")
       case "place" => {
+        val measures = (n \ "measure" \ "num").toVector
         val id = nd.attribute("key").get.text
         val res = id + "," + nd.text.replaceAll("[\\s]+", " ")
+        if (measures.size != 4) {
+          println(s"${measures.size} nums in  " + res)
+        }
         res
       }
     }

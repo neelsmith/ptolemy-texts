@@ -23,7 +23,11 @@ lazy val crossed = crossProject.in(file(".")).
         "org.wvlet.airframe" %%% "airframe-log" % "19.9.0",
 
         "edu.holycross.shot.cite" %%% "xcite" % "4.0.2",
-        "edu.holycross.shot" %%% "histoutils" % "2.2.0"
+        "edu.holycross.shot" %%% "histoutils" % "2.2.0",
+        "edu.holycross.shot" %%% "greek" % "2.6.0"
+
+
+
       )
 
     ).
