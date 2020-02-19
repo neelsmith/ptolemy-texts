@@ -35,9 +35,9 @@ object TeiParser extends LogSupport {
       nums(3).text + "\""
     }
     debug("lons are #" + (lonDeg +  lonMin).trim + "#")
-    val lon = MilesianNumeric((lonDeg + lonMin).trim)
+    val lon = MilesianWithFraction((lonDeg + lonMin).trim)
     debug("lon " + lon)
-    val lat = MilesianNumeric((latDeg + latMin).trim)
+    val lat = MilesianWithFraction((latDeg + latMin).trim)
     debug("lon/lat " + lon + "/" + lat)
     val lonStr = lon.ucode
     val latStr = lat.ucode
@@ -52,12 +52,12 @@ object TeiParser extends LogSupport {
 
 
   /** Parse a TEI <item> element, and format
-  * a delimited-text String.
+  * a delimited-text String for its id, name and coordinates.
   *
   * @param n A TEI <item> element.
   */
   def parseItem(n: scala.xml.Node) : String = {
-    //debug("PARSE n = " + n)
+
     val nameSeq = n \ "name"
     debug("item with nameSeq " + nameSeq)
 
@@ -69,10 +69,9 @@ object TeiParser extends LogSupport {
           debug("episemos: " + nd)
           ""
         }
+
         case "place" => {
-
           val measures = (n \ "measure" \ "num").toVector
-
           val id = nd.attribute("key").get.text
           debug("Parse a place with id " + id ) //+ " from measures " + measures)
           val res = id + "#" + nd.text.replaceAll("[\\s]+", " ")
@@ -141,7 +140,11 @@ object TeiParser extends LogSupport {
       val items = (l \ "item").toVector
       val processed = for (i <- items) yield {
         val myItem =  TeiParser.parseItem(i)  //itemProcess(i)
-        groupings._1 + "#" + myItem
+        if (myItem.isEmpty) {
+          ""
+        } else {
+          groupings._1 + "#" + myItem
+        }
       }
       processed
     }
