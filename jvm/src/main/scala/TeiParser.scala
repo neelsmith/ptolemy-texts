@@ -34,8 +34,11 @@ object TeiParser extends LogSupport {
     val latMin = if (nums(3).text.trim.isEmpty) {""} else {
       nums(3).text + "\""
     }
-    val lon = MilesianNumeric(lonDeg + lonMin)
-    val lat = MilesianNumeric(latDeg + latMin)
+    debug("lons are #" + (lonDeg +  lonMin).trim + "#")
+    val lon = MilesianNumeric((lonDeg + lonMin).trim)
+    debug("lon " + lon)
+    val lat = MilesianNumeric((latDeg + latMin).trim)
+    debug("lon/lat " + lon + "/" + lat)
     val lonStr = lon.ucode
     val latStr = lat.ucode
     debug("Created lon/lat pair " + lon + " : " + lat)
@@ -54,8 +57,10 @@ object TeiParser extends LogSupport {
   * @param n A TEI <item> element.
   */
   def parseItem(n: scala.xml.Node) : String = {
-    debug("PARSE n = " + n)
+    //debug("PARSE n = " + n)
     val nameSeq = n \ "name"
+    debug("item with nameSeq " + nameSeq)
+
     if(nameSeq.toVector.nonEmpty) {
       val nd = nameSeq.head
 
@@ -69,7 +74,7 @@ object TeiParser extends LogSupport {
           val measures = (n \ "measure" \ "num").toVector
 
           val id = nd.attribute("key").get.text
-          debug("Parse a place with id " + id + " from measures " + measures)
+          debug("Parse a place with id " + id ) //+ " from measures " + measures)
           val res = id + "#" + nd.text.replaceAll("[\\s]+", " ")
           val lldata = if (measures.size != 4) {
             error(s"ERROR: ${measures.size} nums in  " + res)
@@ -83,8 +88,10 @@ object TeiParser extends LogSupport {
         }
       }
       processed
+
+
     } else {
-      error("No name element.")
+      error("No name element in " + nameSeq)
       ""
     }
   }
@@ -99,18 +106,89 @@ object TeiParser extends LogSupport {
   * @param province Value for province containing this section.
   * @param bkChap Book.chapter value for province containing this section.
   */
+    def groupSectionLists(sect: scala.xml.Node,
+      continent: String,
+      province: String,
+      bkChap: String ) :  (String, Vector[scala.xml.Node]) = {
+      //debug("Get groups for " + sect)
+      val sectNum = sect.attribute("n").get
+      val geoType = sect.attribute("type").getOrElse("")
+
+      //val props = if (province.isEmpty) { "" } else {Vector(continent, province, geoType).mkString("#") }
+      val summary = Vector(bkChap + "." + sectNum, continent, province, geoType).mkString("#")
+      val lists =  sect \ "list"
+      (summary, lists.toVector)
+    }
+
+  /** Given contextual informatoin, create a complete delimited-text record for
+  * a TEI <div> representing a section, the third tier in Ptolemy's citaiton hierarchy.
+  *
+  * @param sect A parsed TEI <div> representing a citable section, the third
+  * tier in the citation hierarchy for the Geography.
+  * @param continent Value for continent  containing this section.
+  * @param province Value for province containing this section.
+  * @param bkChap Book.chapter value for province containing this section.
+  */
   def parseSection(sect: scala.xml.Node,
     continent: String,
     province: String,
-    bkChap: String ) :  (String, Vector[scala.xml.Node]) = {
-    val sectNum = sect.attribute("n").get
-    val geoType = sect.attribute("type").getOrElse("")
+    bkChap: String ) : Vector[String] = {
 
-    //val props = if (province.isEmpty) { "" } else {Vector(continent, province, geoType).mkString("#") }
-    val summary = Vector(bkChap + "." + sectNum, continent, province, geoType).mkString("#")
-    val lists =  sect \ "list"
-    //val listData =   .flatten.flatten.toVector.filter(_._2.nonEmpty)
-    (summary, lists.toVector)
+    val groupings = groupSectionLists(sect, continent, province, bkChap)
+    debug(groupings._1 + " has " + groupings._2.size + " lists.")
+
+    val processedItems = for (l <- groupings._2) yield {
+      val items = (l \ "item").toVector
+      val processed = for (i <- items) yield {
+        val myItem =  TeiParser.parseItem(i)  //itemProcess(i)
+        groupings._1 + "#" + myItem
+      }
+      processed
+    }
+    //println("Processed to \n" + processedItems.flatten.mkString("\n"))
+    processedItems.flatten.map(_.trim).filter(_.nonEmpty)
   }
+
+  def parseChapter(ch: scala.xml.Node,
+    continent: String,
+    bk: String) : Vector[String]= {
+      val chNum = ch.attribute("n").get
+      val provinceOpt =   ch.attribute("ana")
+      val province = provinceOpt match {
+        case None => ""
+        case _ => provinceOpt.get.text.replaceAll("#", "")
+      }
+      val sects = ch \ "div"
+      val sectionData = for (s <- sects) yield {
+        parseSection(s, continent, province, bk + "." + chNum)
+      }
+      sectionData.toVector.flatten.map(_.trim).filter(_.nonEmpty)
+  }
+
+  def parseBook(bk: scala.xml.Node) : Vector[String] = {
+    val bookRef = bk.attribute("n").get.text
+    val continentOpt =   bk.attribute("ana")
+    val continent = continentOpt match {
+      case None => ""
+      case _ => continentOpt.get.text.replaceAll("#", "")
+    }
+    val chaps = bk \ "div"
+    val chapData = for (ch <- chaps) yield {
+      parseChapter(ch, continent, bookRef)
+    }
+    chapData.flatten.toVector.map(_.trim).filter(_.nonEmpty)
+  }
+
+  def parseTEI(root: scala.xml.Node) = {
+    val books = root \ "text" \ "body" \ "div"
+    val bookData = for (book <- books) yield {
+      parseBook(book)
+    }
+    val lines = bookData.toVector.flatten.map(_.trim).filter(_.nonEmpty)
+    debug(lines.size + " non-empty lines.")
+    //lines.map(PtolemyString(_))
+    lines
+  }
+
 
 }
