@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ptolemy>
+  
+    <book
+        n="2"
+        value="europe">
+        <satrapy
+            n="2"
+            value="hibernia">
+            <physicaltype
+                n="1"
+                value="paralios"> </physicaltype>
+        </satrapy>
+    </book>
+    <book
+        n="3" value="europe">
+    <satrapy n="1" value="italia">
+    
+    </satrapy>
+    </book>
+    <book
+        n="4" value="Libya"/>
+    <book
+        n="5"  value="Asia"/>
+    <book
+        n="6"   value="Asia"/>
+    <book
+        n="7"  value="Asia"/>
+   
+</ptolemy>

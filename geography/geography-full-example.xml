@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<div  ana='#magnagraecia' n='10' type='paralios'>
+    <p >
+        <rs  type='ethnic'>Μεγάλης Ἑλλάδος</rs> παρὰ τὸ Ἀδριατικὸν
+        πέλαγος</p>
+    <list  ana='#adriatic' type='simple'>
+        <item >
+            <name  key='pt-ll-1169' type='place'>Ζεφύριον ἄκρον</name>
+            <measure  type='llpair'>
+                <num  type='cardinal'>μ</num>
+                <num  type='fraction'>½δ</num>
+                <num  type='cardinal'>λη</num>
+                <num  type='fraction'>ιβ</num>
+            </measure>
+        </item>
+        <item >
+            <name  key='pt-ll-1170' type='place'>Λοκροὶ</name> πόλις 
+            <measure  type='llpair'>
+                <num  type='cardinal'>μ</num>
+                <num  type='fraction'>½γ</num>
+                <num  type='cardinal'>λη</num>
+                <num  type='fraction'>γ ιβ</num>
+            </measure>
+        </item>
+        <item >
+            <name  key='pt-ll-1171' type='place'>Λοκάνου ποταμοῦ ἐκβολαί</name>
+            
+            <measure  type='llpair'>
+                <num  type='cardinal'>μ</num>
+                <num  type='fraction'>½γ ιβ</num>
+                <num  type='cardinal'>λη</num>
+                <num  type='fraction'>½ιβ</num>
+            </measure>
+        </item>
+    </list>
+    <p > ἐν δὲ τῷ κατὰ Σκυλάκιον κόλπῳ</p>
+    <list  ana='#gulf-scylacium' type='simple'>
+        <item >
+            <name  key='pt-ll-1172' type='place'>πόλις Σκυλάκιον</name>
+            <measure  type='llpair'>
+                <num  type='cardinal'>μ</num>
+                <num  type='fraction'>½δ</num>
+                <num  type='cardinal'>λη</num>
+                <num  type='fraction'>⅔</num>
+            </measure>
+        </item>
+        <item >
+            <name  key='pt-ll-1173' type='place'>ὁ μυχὸς τοῦ Σκυλακίου κόλπου</name>
+            <measure  type='llpair'>
+                <num  type='cardinal'>μ</num>
+                <num  type='fraction'>½δ</num>
+                <num  type='cardinal'>λη</num>
+                <num  type='fraction'>½δ</num>
+            </measure>
+        </item>
+        <item >
+            <name  key='pt-ll-1174' type='place'>Λακίνιον ἄκρον</name>
+            <measure  type='llpair'>
+                <num  type='cardinal'>μα</num>
+                <num  type='fraction'>½</num>
+                <num  type='cardinal'>λη</num>
+                <num  type='fraction'>½δ</num>
+            </measure>
+        </item>
+    </list>
+    <p > ἐν δὲ τῷ Ταραντίνῳ κόλπῳ</p>
+    <list  ana='#gulf-taras' type='simple'>
+        <item >
+            <name  key='pt-ll-1175' type='place'>Κρότων</name> πόλις <measure  type='llpair'>
+                <num  type='cardinal'>μα</num>
+                <num  type='fraction'>½</num>
+                <num  type='cardinal'>λθ</num>
+                <num  type='fraction'>Ϛ</num>
+            </measure>
+        </item>
+        <item >
+            <name  key='pt-ll-1176' type='place'>Θούριον</name>
+            
+            <measure  type='llpair'>
+                <num  type='cardinal'>μ</num>
+                <num  type='fraction'>½γ ιβ</num>
+                <num  type='cardinal'>λθ</num>
+                <num  type='fraction'>½</num>
+            </measure>
+        </item>
+        <item >
+            <name  key='pt-ll-5670' type='place'>Μεταπόντιον</name>
+            
+            <measure  type='llpair'>
+                <num  type='cardinal'>μ</num>
+                <num  type='fraction'>½γ ιβ</num>
+                <num  type='cardinal'>λθ</num>
+                <num  type='fraction'>½γ ιβ</num>
+            </measure>
+        </item>
+        <item >
+            <name  key='pt-ll-1177' type='place'>Τάρας</name>
+            <measure  type='llpair'>
+                <num  type='cardinal'>μα</num>
+                <num  type='fraction'>½</num>
+                <num  type='cardinal'>μ</num>
+                <num  type='fraction'/>
+            </measure>
+        </item>
+    </list>
+</div>
