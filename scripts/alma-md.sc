@@ -1,34 +1,43 @@
+//read CEX, write jekyll pages
 
-import edu.holycross.shot.xmlutils._
-import scala.xml._
+import scala.io._
+import edu.holycross.shot.cite._
+import java.io.PrintWriter
 
-val f = "ptolemy-raw/almagest-valid-tei.xml"
-val root = XML.load(f)
-val body = (root \\ "body").toVector.head
 
-val bks = (body \ "div").toVector
+val targetDir = "md/almagest/"
+val srcFile = "ocr/almagest.cex"
 
-val cexVectors = for (bk <- bks) yield {
-  val bkNum = (bk.attribute("n").get.text)
-  val chaps = (bk \ "div").toVector
-  for (chap <- chaps) yield {
-    val chapNum = (chap.attribute("n").get.text)
 
-    val head = (chap \ "head").toVector
-    val hdrCex = if (head.isEmpty) {
-      bkNum + "." + chapNum + ".toc#"
-    }else {
-      bkNum + "." + chapNum + ".title#" + head.text.replaceAll("[ \n]+", " ")
-    }
-    //println(hdrCex)
-    val paras = (chap \ "p").toVector.zipWithIndex
-    for (p <- paras) yield {
-      val pNum = p._2 + 1
-      val pRef = bkNum + "." + chapNum + "." + pNum + "#"
-      pRef + p._1.text.replaceAll("[ \n]+", " ")
-    }
+val lines = Source.fromFile(srcFile).getLines.toVector
+
+for (ln <- lines.zipWithIndex) {
+  val idx = ln._2
+  val prev = if (idx == 0) {""} else {
+    val prevCols = lines(idx - 1).split("#")
+    val prevUrn = CtsUrn(prevCols(0))
+    s"[${prevUrn.passageComponent}](../${prevUrn.passageComponent}/)"
+  }
+
+  val next = if (idx == lines.size - 1) {""} else {
+    val nextCols = lines(idx + 1).split("#")
+    val nextUrn = CtsUrn(nextCols(0))
+    s"[${nextUrn.passageComponent}](../${nextUrn.passageComponent}/)"
+  }
+
+  val cols = ln._1.split("#")
+
+  if (cols.size != 2 ) {
+    println("ERROR ON LINE " + ln)
+  } else {
+    val u = CtsUrn(cols(0))
+    val fName = targetDir + u.passageComponent + ".md"
+
+    val title = "Ptolemy, Almagest, " + u.passageComponent
+    val hdr = "---\ntitle: " + title + "\nlayout: page\n---\n\n"
+    val txt = cols(1)
+
+    val nav = s"\n\n---\n\nprev: ${prev} | next: ${next}\n\n"
+    new PrintWriter(fName){write(hdr + txt + nav);close;}
   }
 }
-
-// Remove tiering in 3 hierarchies:
-val cex = cexVectors.flatten.flatten
