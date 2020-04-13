@@ -33,7 +33,7 @@ def collectText(n: xml.Node, s: String = ""): String = {
 
 
 val txt = collectText(body)
-val words = txt.replaceAll("\n"," ").split("[ ]+").toVector.filter(_.nonEmpty).map(_.toLowerCase).map(_.replaceAll("[\\.;:,]",""))
+val words = txt.replaceAll("\n"," ").split("[ ]+").toVector.map(_.toLowerCase).map(_.replaceAll("[\\.;:,]","")).filter(_.nonEmpty)
 
 
 
