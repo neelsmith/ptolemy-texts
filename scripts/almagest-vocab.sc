@@ -5,10 +5,9 @@ import scala.xml._
 val f = "ptolemy-raw/almagest-valid-tei.xml"
 val root = XML.load(f)
 val body = (root \\ "body").toVector.head
-//val txt = TextReader.collectText(body)
 
 
-
+// Collect all text content except for <num> elements.
 def collectText(n: xml.Node, s: String = ""): String = {
   var txt = s
   n match {
@@ -17,7 +16,6 @@ def collectText(n: xml.Node, s: String = ""): String = {
       if (cleaner.nonEmpty){
         txt += cleaner + " "
       }
-
     }
     case e: xml.Elem =>  {
 
@@ -35,7 +33,9 @@ def collectText(n: xml.Node, s: String = ""): String = {
 
 
 val txt = collectText(body)
-val words = txt.replaceAll("[\\.;:,\n]","").split("[ ]+").filter(_.nonEmpty).map(_.toLowerCase).toVector
+val words = txt.replaceAll("\n"," ").split("[ ]+").toVector.filter(_.nonEmpty).map(_.toLowerCase).map(_.replaceAll("[\\.;:,]",""))
+
+
 
 import java.io.PrintWriter
 def writeCounts(wordList: Vector[String]) {
