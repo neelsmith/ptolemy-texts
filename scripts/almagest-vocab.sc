@@ -19,12 +19,14 @@ def collectText(n: xml.Node, s: String = ""): String = {
     }
     case e: xml.Elem =>  {
 
-      if (e.label == "num") {
-          // skip
-      } else {
-        for (ch <- e.child) {
-         txt += collectText(ch, s)
-       }
+      e.label match {
+        case "num" => "" //
+        case "rs" => "" //
+        case _ => {
+          for (ch <- e.child) {
+            txt += collectText(ch, s)
+          }
+        }
       }
    }
   }
@@ -33,8 +35,9 @@ def collectText(n: xml.Node, s: String = ""): String = {
 
 
 val txt = collectText(body)
-val words = txt.replaceAll("\n"," ").split("[ ]+").toVector.map(_.toLowerCase).map(_.replaceAll("[\\.;:,]","")).filter(_.nonEmpty)
+val words =   txt.replaceAll("\n"," ").split("[ ]+").toVector.map(_.replaceAll("[\\.;:,]","")).filter(_.nonEmpty)
 
+val wordsLC = words.map(_.toLowerCase).distinct
 
 
 import java.io.PrintWriter
