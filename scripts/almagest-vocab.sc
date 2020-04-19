@@ -1,5 +1,5 @@
 
-import edu.holycross.shot.xmlutils._
+//import edu.holycross.shot.xmlutils._
 import scala.xml._
 
 val f = "ptolemy-raw/almagest-valid-tei.xml"
