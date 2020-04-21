@@ -2,7 +2,8 @@
 //import edu.holycross.shot.xmlutils._
 import scala.xml._
 
-val f = "ptolemy-raw/almagest-valid-tei.xml"
+//val f = "ptolemy-raw/almagest-valid-tei.xml"
+val f = "ptolemy-raw/almagest-no-catalog.xml"
 val root = XML.load(f)
 val body = (root \\ "body").toVector.head
 
@@ -41,10 +42,10 @@ val wordsLC = words.map(_.toLowerCase).distinct
 
 
 import java.io.PrintWriter
-def writeCounts(wordList: Vector[String]) {
+def writeCounts(wordList: Vector[String], outFile: String = "almagest-vocab.txt") {
   val grouped = wordList.groupBy(w => w)
   val counts = grouped.map{ case (wd, v) => (wd, v.size)}
   val countsVect = counts.toVector.sortBy(_._2).reverse
   val strs = countsVect.map{ case (wd,count) => wd + "#" + count}
-  new PrintWriter("almagest-vocab.txt"){write(strs.mkString("\n"));close;}
+  new PrintWriter(outFile){write(strs.mkString("\n"));close;}
 }
